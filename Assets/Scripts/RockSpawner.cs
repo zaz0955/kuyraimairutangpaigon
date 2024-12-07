@@ -5,7 +5,7 @@ public class RockSpawner : MonoBehaviour
 {
     [Header("Spawn Settings")]
     public GameObject rockPrefab; // Prefab ของหิน
-    public float spawnInterval = 1f; // ระยะเวลาระหว่างการ Spawn
+    public float spawnInterval = 2f; // ระยะเวลาระหว่างการ Spawn
 
     [Header("Spawn Area")]
     public Vector3 spawnStart = new Vector3(-4.13f, 2.89f, 0f); // จุดเริ่มต้นของพื้นที่ Spawn

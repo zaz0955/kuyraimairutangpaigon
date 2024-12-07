@@ -1,11 +1,27 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using static UnityEngine.RuleTile.TilingRuleOutput;
 
-public class Rock2D : GameEntity
+public class Rock : GameEntity
 {
-    // Enum for rock types with different characteristics
+    // ตัวแปรสำหรับ ScoreManager
+    private ScoreManager scoreManager;
+
+    private void Awake()
+    {
+        // ค้นหา ScoreManager ในฉาก
+        scoreManager = FindObjectOfType<ScoreManager>();
+
+        // ตรวจสอบว่าเจอ ScoreManager หรือไม่
+        if (scoreManager == null)
+        {
+            Debug.LogError("ScoreManager not found!");
+        }
+
+        spriteRenderer = GetComponent<SpriteRenderer>();
+    }
     public enum RockType
     {
         Small,
@@ -14,19 +30,11 @@ public class Rock2D : GameEntity
     }
 
     [SerializeField] private RockType rockType = RockType.Medium;
-
-    // Sprite renderer for visual representation
     private SpriteRenderer spriteRenderer;
-
-    private void Awake()
-    {
-        spriteRenderer = GetComponent<SpriteRenderer>();
-    }
 
     // Initialize rock with type-specific properties
     public override void Initialize()
     {
-        // Randomize rock type if not preset
         if (rockType == RockType.Medium)
         {
             rockType = (RockType)Random.Range(0, 3);
@@ -61,4 +69,24 @@ public class Rock2D : GameEntity
     {
         Destroy(gameObject);
     }
+
+    // Detect collision with Player (Trigger)
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.CompareTag("Player"))
+        {
+            // เมื่อ Player โดน Rock ให้ลด health ของ Player
+            Player player = other.GetComponent<Player>();
+            if (player != null)
+            {
+                player.TakeDamage();  // เรียกฟังก์ชัน TakeDamage ใน Player class เพื่อลด health
+                scoreManager.StopScoring(); // หยุดการคำนวณคะแนน
+            }
+
+            // ทำลาย Rock เมื่อชนกับ Player
+            Destroy(gameObject);
+        }
+    }
+
 }
+
